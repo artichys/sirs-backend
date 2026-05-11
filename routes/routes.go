@@ -10,9 +10,10 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	// Pengaturan CORS yang mengizinkan metode PUT
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://nama-proyek-anda.vercel.app"}, // GANTI dengan URL Vercel Anda
+		// Ganti sementara ke "*" agar semua domain bisa akses (untuk testing)
+		// Atau masukkan URL Vercel asli Anda https://sirs-frontend.vercel.app
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		AllowCredentials: true,
