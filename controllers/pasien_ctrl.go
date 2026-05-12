@@ -34,7 +34,7 @@ func CreatePasien(c *gin.Context) {
 	// Catatan: GORM akan auto-increment ID setelah data di-save, jadi kita save dulu
 	// dengan RM sementara, lalu update RM-nya.
 	pasienBaru.NomorRekamMedis = fmt.Sprintf("TEMP-%d", time.Now().Unix())
-	
+
 	if err := config.DB.Create(&pasienBaru).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mendaftarkan pasien"})
 		return
@@ -49,4 +49,16 @@ func CreatePasien(c *gin.Context) {
 		"message": "Pasien berhasil didaftarkan",
 		"data":    pasienBaru,
 	})
+
+}
+func GetAllPasien(c *gin.Context) {
+	var pasiens []models.Pasien
+
+	// config.DB.Find(&pasiens) akan mengambil seluruh isi tabel pasien
+	if err := config.DB.Find(&pasiens).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data pasien"})
+		return
+	}
+
+	c.JSON(http.StatusOK, pasiens)
 }

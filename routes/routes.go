@@ -39,6 +39,9 @@ func SetupRouter() *gin.Engine {
 
 		// ---- FASE 5: Laporan Manajemen ----
 		api.GET("/laporan/utilisasi", controllers.GetLaporanUtilisasi)
+		api.POST("/pasien", controllers.CreatePasien) // Ini yang kamu kirim tadi
+		api.GET("/pasien", controllers.GetAllPasien)  // TAMBAHKAN INI agar Frontend bisa narik data
+
 	}
 
 	return r
