@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"sirs-backend/config"
 	"sirs-backend/models" // Asumsi Anda sudah membuat struct modelnya
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -52,6 +53,15 @@ type JadwalInput struct {
 	JamSelesai string `json:"jam_selesai"`
 }
 
+type BulkWeeklyInput struct {
+	IdDokter   int    `json:"id_dokter"`
+	IdRuangan  int    `json:"id_ruangan"`
+	StartDate  string `json:"start_date"` // Format: YYYY-MM-DD
+	JamMulai   string `json:"jam_mulai"`
+	JamSelesai string `json:"jam_selesai"`
+	DurasiHari int    `json:"durasi_hari"` // Misal: 7 untuk seminggu
+}
+
 // CreateJadwal: Dokter mengajukan jadwal baru
 func CreateJadwal(c *gin.Context) {
 	var input JadwalInput
@@ -78,6 +88,45 @@ func CreateJadwal(c *gin.Context) {
 		"message": "Jadwal berhasil diajukan dan menunggu validasi Admin",
 		"data":    jadwalBaru,
 	})
+}
+
+func CreateJadwalMingguan(c *gin.Context) {
+	var input BulkWeeklyInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"error": "Input tidak valid"})
+		return
+	}
+
+	// Parse tanggal mulai
+	start, err := time.Parse("2006-01-02", input.StartDate)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Format tanggal salah"})
+		return
+	}
+
+	tx := config.DB.Begin()
+	for i := 0; i < input.DurasiHari; i++ {
+		// Tambahkan hari secara otomatis
+		tanggalBaru := start.AddDate(0, 0, i).Format("2006-01-02")
+
+		jadwal := models.Jadwal{
+			IdDokter:     input.IdDokter,
+			IdRuangan:    input.IdRuangan,
+			Tanggal:      tanggalBaru,
+			JamMulai:     input.JamMulai,
+			JamSelesai:   input.JamSelesai,
+			StatusJadwal: "Draft",
+		}
+
+		if err := tx.Create(&jadwal).Error; err != nil {
+			tx.Rollback()
+			c.JSON(500, gin.H{"error": "Gagal membuat jadwal seri"})
+			return
+		}
+	}
+	tx.Commit()
+
+	c.JSON(201, gin.H{"message": "Jadwal mingguan berhasil diajukan"})
 }
 
 func GetSemuaJadwal(c *gin.Context) {
