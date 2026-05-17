@@ -22,9 +22,9 @@ func SetupRouter() *gin.Engine {
 	api := r.Group("/api")
 	{
 		// ---- FASE 1: Jadwal Dokter ----
-		api.POST("/jadwal", controllers.CreateJadwal)         // Untuk Harian
+		api.POST("/jadwal", controllers.CreateJadwal)                  // Untuk Harian
 		api.POST("/jadwal/mingguan", controllers.CreateJadwalMingguan) // Untuk Mingguan
-		api.GET("/jadwal", controllers.GetAllJadwal) // Menggunakan fungsi baru yang ada Preload-nya
+		api.GET("/jadwal", controllers.GetAllJadwal)                   // Menggunakan fungsi baru yang ada Preload-nya
 		api.GET("/jadwal/dokter/:id", controllers.GetJadwalByDokter)
 		api.PUT("/jadwal/:id/status", controllers.UpdateStatusJadwal) // Fungsi dinamis untuk Approve/Reject
 
@@ -40,8 +40,7 @@ func SetupRouter() *gin.Engine {
 
 		// ---- FASE 5: Laporan Manajemen ----
 		api.GET("/laporan/utilisasi", controllers.GetLaporanUtilisasi)
-		api.POST("/pasien", controllers.CreatePasien) // Ini yang kamu kirim tadi
-		api.GET("/pasien", controllers.GetAllPasien)  // TAMBAHKAN INI agar Frontend bisa narik data
+		api.GET("/pasien", controllers.GetAllPasien) // TAMBAHKAN INI agar Frontend bisa narik data
 
 	}
 
